@@ -13,35 +13,51 @@ module Lab where
 import Prelude hiding ( elem, maximum, intersperse, transpose
                       , subsequences, permutations, any, all, flip, takeWhile
                       , zipWith, groupBy, notElem )
+import Data.List (delete)
 
 --------------------------------------------------------------------------------
 -- Recursive and higher-order functions
 
 elem :: Eq a => a -> [a] -> Bool
-elem = undefined
+--elem n [] = False
+--elem n (x:xs) = (n == x) || elem n xs
 
-maximum :: Ord a => [a] -> a
-maximum = undefined
+--elem n = foldr (\x r -> (x==n) || r) False
+--elem n xs = not (null (filter (== n) xs))
+
+elem n = any ( == n)
+
+maximum :: Ord a => [a] -> a --QUESTION, EXPLAIN WHY NOT NEED XS (maximum xs = foldr1 max xs)
+maximum = foldr1 max
 
 any :: (a -> Bool) -> [a] -> Bool
-any = undefined
+any func = foldr (\element recurResult -> func element || recurResult) False
 
 all :: (a -> Bool) -> [a] -> Bool
-all = undefined
+all func = foldr (\element recurResult -> func element && recurResult) True
 
 flip :: (a -> b -> c) -> b -> a -> c
-flip = undefined
+flip f x y = f y x
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
-takeWhile = undefined
+takeWhile pred [] = []
+takeWhile pred (x:xs)
+    | pred x = x : takeWhile pred xs
+    | otherwise = []
+    
 
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith = undefined
+zipWith _ _ [] = []
+zipWith _ [] _ = []
+zipWith func (a:args) (e:effects) = func a e : zipWith func args effects
 
 groupBy :: (a -> a -> Bool) -> [a] -> [[a]]
-groupBy = undefined
+groupBy pred [] = []
+groupBy pred (x:xs) = (x : takeWhile (pred x) xs) : groupBy pred (dropWhile (pred x) xs)
+
 
 permutations :: Eq a => [a] -> [[a]]
-permutations = undefined
+permutations [] = [[]]
+permutations list = [l:ls | l <- list, ls <- permutations (delete l list)]
 
 --------------------------------------------------------------------------------
